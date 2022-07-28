@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Miguel Yang" />
+    <link rel="stylesheet" href="./styles/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>chart</title>
+  </head>
+
+  <body>
+    <h1>這是個圖表</h1>
+    <%= invest %>
+    <br />
+    <%= percentage %>
+    <!-- <canvas id="myChart"></canvas> -->
+    <canvas id="myChart"></canvas>
+
+    <script>
+      const ctx = "myChart";
+      let percentage = "<%= percentage %>";
+      let invest = "<%= invest %>";
+      let mylabels = invest.split(",");
+      let myData = percentage.split(",");
+      const data = {
+        labels: mylabels,
+
+        datasets: [
+          {
+            label: "My First Dataset",
+            data: myData,
+            backgroundColor: [
+              "rgb(255, 99, 132)",
+              "rgb(54, 162, 235)",
+              "rgb(255, 205, 86)",
+            ],
+            hoverOffset: 4,
+          },
+        ],
+      };
+      const myChart = new Chart(ctx, {
+        type: "pie",
+        data: data,
+      });
+    </script>
+
+    <h1>-----------------------------------</h1>
+  </body>
+</html>
