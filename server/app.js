@@ -1,7 +1,7 @@
 const express = require("express");
-const req = require("express/lib/request");
 const app = express();
 const fs = require("fs");
+const cors = require("cors");
 const { PythonShell } = require("python-shell");
 var bodyParser = require("body-parser");
 var urlencodedParser = bodyParser.urlencoded({ extended: true });
@@ -27,15 +27,32 @@ app.listen(8080, () => {
 
 app.use(express.static("public"));
 app.use(express.json());
+app.use(bodyParser.text({ type: "*/*" }));
+app.use(express.urlencoded({ extended: false }));
+//use cors to allow cross origin resource sharing
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 app.set("view engine", "ejs");
 
 //Link assets.json
-const assets = require("./data/assets.json");
+const assets = require("./data/portfolios.json");
 //首頁
 app.get("/", (req, res) => {
   res.render("index.ejs", { assets });
 });
+
+// app.post("/api/portfolios", function (req, res) {
+//   let jsonData = JSON.parse(req.body);
+//   console.log(jsonData[0].assets);
+//   res.send("API OK");
+// });
+
+app.post("/api/portfolios", urlencodedParser, pythonProcess);
 
 // app.post("/chart", urlencodedParser, (req, res) => {
 //   // console.log(req.body);
@@ -56,30 +73,40 @@ app.get("/", (req, res) => {
 //   // res.send("成功提交表單");
 // });
 
-const start = "2022-06-01";
-const end = "2022-06-30";
-const portfolios_string = JSON.stringify(require("./data/portfolios.json"));
+const start = "2022-07-01";
+const end = "2022-07-30";
+// const portfolios_string = JSON.stringify(require("./data/portfolios.json"));
 
-app.post("/chart", urlencodedParser, pythonProcess);
+// app.post("/chart", urlencodedParser, pythonProcess);
 
 function pythonProcess(req, res) {
-  console.log(req.body);
+  let portfolios_string = req.body;
+  let data = JSON.parse(req.body);
+  console.log(
+    "Portfolio #1:",
+    data[0].assets,
+    "Portfolio #2:",
+    data[1].assets,
+    "Portfolio #3:",
+    data[2].assets
+  );
+  res.send("text");
 
-  res.send("OK");
+  let options = {
+    args: [start, end, portfolios_string],
+  };
 
-  // let options = {
-  //   args: [start, end, portfolios_string],
-  // };
-
-  // PythonShell.run("./backtester.py", options, (err, data) => {
-  //   if (err) {
-  //     res.send("錯誤");
-  //   } else {
-  //     const parsedString = JSON.parse(data);
-  //     res.send("OK");
-  //     console.log(parsedString);
-  //   }
-  // });
+  PythonShell.run("./backtester.py", options, (err, data) => {
+    if (err) {
+      res.send("錯誤");
+    } else {
+      const parsedString = JSON.parse(data);
+      // res.send("OK");
+      console.log(parsedString);
+      // res.send("text");
+    }
+  });
+  // res.send(parsedString);
 }
 
 app.get("*", function (req, res) {

@@ -84,8 +84,6 @@ function Myform() {
   };
   const onError = (errors) => console.log("填寫表單錯誤!");
 
-  // Form POST
-
   // assets.json導入option選項
   let option = assetsData.map((a, k) => {
     return (
