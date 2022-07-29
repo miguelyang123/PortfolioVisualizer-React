@@ -74,10 +74,15 @@ function Myform() {
   const onSubmit = (data) => {
     let jsonData = formToJson(data);
     console.log(jsonData);
+    // Form POST
+    let URL_API = "http://localhost:8080/api/portfolios";
+    fetch(URL_API, { method: "POST", body: JSON.stringify(jsonData) })
+      .then(alert("送出成功"))
+      .catch((e) => {
+        console.log(e);
+      });
   };
   const onError = (errors) => console.log("填寫表單錯誤!");
-
-  // Form POST
 
   // assets.json導入option選項
   let option = assetsData.map((a, k) => {
